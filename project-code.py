@@ -128,3 +128,20 @@ for ingredients_list in similar_ingredients_lists:
             if ingredients_counts[ingredient] >= SUPPORT_THRESHOLD:
                 frequent_ingredients.add(ingredient)
 
+# FIND FREQUENT PAIRS OF ITEMS
+pair_counts = {}
+common_pairs = set()
+
+for ingredients_list in similar_ingredients_lists:
+    for i in range(0, len(ingredients_list)-1):
+        if ingredients_list[i] in frequent_ingredients:
+            for j in range(i+1, len(ingredients_list)):
+                if ingredients_list[j] in frequent_ingredients:
+                    pair = tuple(sorted([ingredients_list[i], ingredients_list[j]]))
+                    if not pair in common_pairs:
+                        if not pair in pair_counts:
+                            pair_counts[pair] = 0
+                        pair_counts[pair] += 1
+                        if pair_counts[pair] >= SUPPORT_THRESHOLD:
+                            common_pairs.add(pair)
+
