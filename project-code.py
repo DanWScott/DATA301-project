@@ -101,11 +101,30 @@ similar_recipes = good_recipes[ good_recipes['similarity'] >= SIMILARITY_THRESHO
 
 # JUST FOR FUN - WHAT ARE THE MOST SIMILAR RECIPES?
 
-similars = similar_recipes.groupby(['id'])['similarity'].mean().nlargest(10)
+"""similars = similar_recipes.groupby(['id'])['similarity'].mean().nlargest(10)
 similar_recipe_ids = similars.compute().index.tolist()
 raw_recipes = df.read_csv('RAW_recipes.csv')
 top_similar_recipes = raw_recipes[ raw_recipes['id'].isin(similar_recipe_ids) ]
 names = top_similar_recipes['name'].compute().tolist()
 for name in names:
-    print(name)
+    print(name)"""
+
+# FIND FREQUENT ITEMS
+FREQUENT_SUPPORT = 0.02
+
+similar_ingredients_lists = similar_recipes.compute()['ingredient_ids'].tolist()
+similar_ingredients_lists = [eval(similar) for similar in similar_ingredients_lists]
+
+SUPPORT_THRESHOLD = FREQUENT_SUPPORT * len(similar_ingredients_lists)
+ingredients_counts = {}
+frequent_ingredients = set()
+
+for ingredients_list in similar_ingredients_lists:
+    for ingredient in ingredients_list:
+        if not ingredient in my_ingredient_ids and not ingredient in frequent_ingredients:
+            if not ingredient in ingredients_counts:
+                ingredients_counts[ingredient] = 0
+            ingredients_counts[ingredient] += 1
+            if ingredients_counts[ingredient] >= SUPPORT_THRESHOLD:
+                frequent_ingredients.add(ingredient)
 
